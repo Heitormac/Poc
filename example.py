@@ -17,23 +17,16 @@ def note_repr(key):
 
 @app.route("/", methods=["GET", "POST"])
 def notes_list():
-    """
-    List or create notes.
-    """
     if request.method == "POST":
         note = str(request.data.get("text", ""))
         idx = max(notes.keys()) + 1
         notes[idx] = note
         return note_repr(idx), status.HTTP_201_CREATED
 
-    # request.method == 'GET'
     return [note_repr(idx) for idx in sorted(notes.keys())]
 
 @app.route("/<int:key>/", methods=["GET", "PUT", "DELETE"])
 def notes_detail(key):
-    """
-    Retrieve, update or delete note instances.
-    """
     if request.method == "PUT":
         note = str(request.data.get("text", ""))
         notes[key] = note
@@ -43,11 +36,10 @@ def notes_detail(key):
         notes.pop(key, None)
         return "", status.HTTP_204_NO_CONTENT
 
-    # request.method == 'GET'
     if key not in notes:
         raise exceptions.NotFound()
     return note_repr(key)
 
 if __name__ == "__main__":
-    app.run(debug=False)
-
+    # Definir host para permitir acesso externo
+    app.run(host="0.0.0.0", port=5000, debug=False)
